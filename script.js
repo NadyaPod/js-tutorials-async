@@ -69,14 +69,29 @@ const renderCountry = (data) => {
 //   })
 // }
 
+// const request = fetch('https://restcountries.com/v2/name/portugal')
+// console.log(request);
+
+// const getCountyData = (country) => {
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//     .then((resp) => resp.json())
+//     .then((data) => renderCountry(data[0]));
+// }
+
 const request = fetch('https://restcountries.com/v2/name/portugal')
 console.log(request);
 
 const getCountyData = (country) => {
   fetch(`https://restcountries.com/v2/name/${country}`)
     .then((resp) => resp.json())
-    .then((data) => renderCountry(data[0]));
+    .then((data) => {
+      const neighbour = data[0].borders[0]
+      renderCountry(data[0]);
+      return fetch(`https://restcountries.com/v2/alpha/${neighbour}`)
+    })
+    .then((resp) => resp.json())
+    .then((data) => renderCountry(data));
 }
 
-getCountyData('spain')
+getCountyData('usa');
 
