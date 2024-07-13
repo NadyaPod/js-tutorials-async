@@ -41,7 +41,6 @@ const renderCountry = (data) => {
   </div>
   </article>`
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
 }
 
 // const getCountyDataAndNeighbour = (country) => {
@@ -78,20 +77,39 @@ const renderCountry = (data) => {
 //     .then((data) => renderCountry(data[0]));
 // }
 
+const renderError = (msg) => {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+}
+
 const request = fetch('https://restcountries.com/v2/name/portugal')
 console.log(request);
 
 const getCountyData = (country) => {
   fetch(`https://restcountries.com/v2/name/${country}`)
-    .then((resp) => resp.json())
+    .then((resp) => {
+      if (!resp.ok) {
+        throw new Error(`Country ${country} not found`)
+      }
+      return resp.json()
+    })
     .then((data) => {
       const neighbour = data[0].borders[0]
       renderCountry(data[0]);
       return fetch(`https://restcountries.com/v2/alpha/${neighbour}`)
     })
     .then((resp) => resp.json())
-    .then((data) => renderCountry(data));
-}
+    .then((data) => renderCountry(data))
+    .catch(err => {
+      console.error(err)
+      renderError(err.message)
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    })
+};
 
-getCountyData('usa');
+btn.addEventListener('click', () => {
+  getCountyData('usadshsh');
+})
+
 
